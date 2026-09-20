@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+  <head>
+    <title><%= [content_for(:title), "Church Attendance"].compact.join(" · ") %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Attendance">
+    <meta name="application-name" content="Church Attendance">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="turbo-refresh-method" content="morph">
+    <meta name="turbo-refresh-scroll" content="preserve">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="h-full text-slate-900 antialiased" data-controller="network-status">
+    <div data-network-status-target="banner" hidden role="status"
+         class="sticky top-0 z-50 bg-amber-500 px-4 py-2 text-center text-sm font-semibold text-amber-950">
+      You are offline. Scans and changes cannot be saved until the connection returns.
+    </div>
+
+    <% if user_signed_in? %>
+      <header class="bg-indigo-600 text-white shadow">
+        <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+          <%= link_to root_path, class: "flex items-center gap-2 text-lg font-bold tracking-tight" do %>
+            <span aria-hidden="true">⛪</span><span>Attendance</span>
+          <% end %>
+          <nav class="hidden items-center gap-1 sm:flex" aria-label="Main">
+            <%= nav_link_to "Dashboard", root_path %>
+            <%= nav_link_to "Attendees", attendees_path %>
+            <%= nav_link_to "Events", events_path %>
+          </nav>
+          <div class="flex items-center gap-3 text-sm">
+            <span class="hidden text-indigo-100 md:inline"><%= current_user.display_name %> · <%= current_user.role.titleize %></span>
+            <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "rounded-md bg-indigo-700/60 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-800" %>
+          </div>
+        </div>
+        <nav class="flex border-t border-indigo-500/60 sm:hidden" aria-label="Main mobile">
+          <% [["Dashboard", root_path], ["Attendees", attendees_path], ["Events", events_path]].each do |name, path| %>
+            <% active = current_page?(path) || (path != root_path && request.path.start_with?(path)) %>
+            <%= link_to name, path, class: "flex-1 py-2.5 text-center text-sm font-medium #{active ? 'bg-indigo-700/60 text-white' : 'text-indigo-100'}", "aria-current": (active ? "page" : nil) %>
+          <% end %>
+        </nav>
+      </header>
+    <% end %>
+
+    <main class="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
+      <%= render "shared/flash" %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

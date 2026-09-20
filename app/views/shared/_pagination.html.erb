@@ -1,0 +1,16 @@
+<% if pager.total_count > 0 %>
+  <nav class="flex flex-col items-center justify-between gap-3 border-t border-slate-200 px-4 py-3 text-sm text-slate-600 sm:flex-row" aria-label="Pagination">
+    <p>Showing <span class="font-medium"><%= pager.first_index %></span>–<span class="font-medium"><%= pager.last_index %></span> of <span class="font-medium"><%= pager.total_count %></span></p>
+    <% if pager.total_pages > 1 %>
+      <div class="flex items-center gap-2">
+        <% if pager.prev_page %>
+          <%= link_to "← Previous", url_for(request.query_parameters.merge(page: pager.prev_page)), class: button_classes(:secondary, "py-1.5") %>
+        <% end %>
+        <span>Page <%= pager.page %> of <%= pager.total_pages %></span>
+        <% if pager.next_page %>
+          <%= link_to "Next →", url_for(request.query_parameters.merge(page: pager.next_page)), class: button_classes(:secondary, "py-1.5") %>
+        <% end %>
+      </div>
+    <% end %>
+  </nav>
+<% end %>

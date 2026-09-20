@@ -1,0 +1,19 @@
+en:
+  time:
+    formats:
+      time: "%-I:%M %p"
+      short_datetime: "%b %-d, %Y %-I:%M %p"
+      scan: "%-I:%M:%S %p"
+  date:
+    formats:
+      long_weekday: "%A, %B %-d, %Y"
+      short: "%b %-d, %Y"
+  activerecord:
+    attributes:
+      attendee:
+        full_name: "Full name"
+        birthdate: "Birthdate"
+      event:
+        event_date: "Date"
+        start_time: "Start time"
+        end_time: "End time"

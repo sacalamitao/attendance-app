@@ -1,0 +1,15 @@
+<div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+  <div>
+    <p class="text-sm"><%= link_to "← Events", events_path, class: "text-indigo-600 hover:underline" %></p>
+    <h1 class="mt-1 text-2xl font-bold"><%= event.name %></h1>
+    <p class="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600">
+      <%= event_status_badge(event) %>
+      <span><%= l(event.event_date, format: :long_weekday) %></span>
+      <span aria-hidden="true">·</span><span><%= event.time_range %></span>
+      <span aria-hidden="true">·</span><span><%= event.location %></span>
+    </p>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <%= yield %>
+  </div>
+</div>

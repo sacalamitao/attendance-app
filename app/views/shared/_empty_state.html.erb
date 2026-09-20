@@ -1,0 +1,7 @@
+<div class="px-6 py-12 text-center">
+  <p class="text-base font-medium text-slate-700"><%= title %></p>
+  <% if local_assigns[:hint] %><p class="mt-1 text-sm text-slate-500"><%= hint %></p><% end %>
+  <% if local_assigns[:action_label] && local_assigns[:action_path] %>
+    <%= link_to action_label, action_path, class: button_classes(:primary, "mt-4") %>
+  <% end %>
+</div>

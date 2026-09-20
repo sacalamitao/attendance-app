@@ -1,0 +1,42 @@
+<%= form_with model: attendee, class: "space-y-5", data: { controller: "ministry-preview", ministry_preview_url_value: api_classification_path } do |f| %>
+  <%= form_errors(attendee) %>
+
+  <div>
+    <%= f.label :full_name, class: label_classes %>
+    <%= f.text_field :full_name, required: true, autocomplete: "name", autofocus: attendee.new_record?, class: input_classes %>
+  </div>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div>
+      <%= f.label :gender, class: label_classes %>
+      <%= f.select :gender, options_for_select(Gender::ALL.map { |g| [Gender.label(g), g] }, attendee.gender), { prompt: "Select gender" },
+            required: true, class: input_classes, data: { ministry_preview_target: "gender", action: "change->ministry-preview#update" } %>
+    </div>
+    <div>
+      <%= f.label :birthdate, class: label_classes %>
+      <%= f.date_field :birthdate, required: true, max: Date.current.iso8601, class: input_classes,
+            data: { ministry_preview_target: "birthdate", action: "change->ministry-preview#update input->ministry-preview#update" } %>
+      <p class="mt-1 text-xs text-slate-500">Attendees must be at least <%= MinistryClassifier::MINIMUM_AGE %> years old.</p>
+    </div>
+  </div>
+
+  <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+    <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Ministry classification (automatic)</p>
+    <p class="mt-1 text-base" data-ministry-preview-target="output" aria-live="polite">
+      <% if attendee.birthdate.present? && attendee.gender.present? %>
+        <% if attendee.current_ministry %>
+          <%= ministry_badge(attendee.current_ministry, size: :lg) %> <span class="text-sm text-slate-500">age <%= attendee.age %></span>
+        <% else %>
+          <span class="text-sm text-rose-700">Not classifiable at this age.</span>
+        <% end %>
+      <% else %>
+        <span class="text-sm text-slate-500">Enter gender and birthdate to see the ministry.</span>
+      <% end %>
+    </p>
+  </div>
+
+  <div class="flex flex-wrap gap-2">
+    <%= f.submit(attendee.new_record? ? "Create attendee" : "Save changes", class: button_classes(:primary)) %>
+    <%= link_to "Cancel", (attendee.new_record? ? attendees_path : attendee_path(attendee)), class: button_classes(:secondary) %>
+  </div>
+<% end %>

@@ -1,0 +1,55 @@
+<% page_title "Attendees" %>
+<div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+  <div>
+    <h1 class="text-2xl font-bold">Attendees</h1>
+    <p class="text-sm text-slate-500">Ministry is calculated automatically from birthdate and gender.</p>
+  </div>
+  <% if policy(Attendee).create? %>
+    <%= link_to "New attendee", new_attendee_path, class: button_classes(:primary) %>
+  <% end %>
+</div>
+
+<%= form_with url: attendees_path, method: :get, class: "mb-4 grid gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:grid-cols-[1fr_auto_auto_auto_auto]", data: { turbo_frame: "_top" } do |f| %>
+  <%= f.search_field :q, value: params[:q], placeholder: "Search by name", "aria-label": "Search by name", class: input_classes %>
+  <%= f.select :ministry, options_for_select([["All ministries", ""]] + Ministry::ALL.map { |m| [Ministry.label(m), m] }, params[:ministry]), {}, "aria-label": "Ministry", class: input_classes %>
+  <%= f.select :gender, options_for_select([["All genders", ""]] + Gender::ALL.map { |g| [Gender.label(g), g] }, params[:gender]), {}, "aria-label": "Gender", class: input_classes %>
+  <%= f.select :status, options_for_select([["Active", "active"], ["Inactive", "inactive"], ["All", "all"]], params[:status].presence || "active"), {}, "aria-label": "Status", class: input_classes %>
+  <%= f.submit "Filter", class: button_classes(:secondary) %>
+<% end %>
+
+<div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+  <% if @attendees.any? %>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-slate-200 text-sm">
+        <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <tr>
+            <th scope="col" class="px-4 py-3">Full name</th>
+            <th scope="col" class="px-4 py-3">Age</th>
+            <th scope="col" class="px-4 py-3">Gender</th>
+            <th scope="col" class="px-4 py-3">Ministry</th>
+            <th scope="col" class="px-4 py-3">QR</th>
+            <th scope="col" class="px-4 py-3">Status</th>
+            <th scope="col" class="px-4 py-3">Created</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @attendees.each do |attendee| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-3 font-medium"><%= link_to attendee.full_name, attendee, class: "hover:underline" %></td>
+              <td class="px-4 py-3"><%= attendee.age %></td>
+              <td class="px-4 py-3"><%= Gender.label(attendee.gender) %></td>
+              <td class="px-4 py-3"><%= ministry_badge(attendee.current_ministry) %></td>
+              <td class="px-4 py-3"><%= link_to "Ready", qr_attendee_path(attendee, format: :svg), class: "text-indigo-600 hover:underline", target: "_blank", rel: "noopener" %></td>
+              <td class="px-4 py-3"><%= attendee_status_badge(attendee) %></td>
+              <td class="px-4 py-3 text-slate-500"><%= l(attendee.created_at.to_date, format: :short) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <%= render "shared/pagination", pager: @pager %>
+  <% else %>
+    <%= render "shared/empty_state", title: "No attendees found", hint: "Try a different filter or add a new attendee.",
+          action_label: (policy(Attendee).create? ? "New attendee" : nil), action_path: new_attendee_path %>
+  <% end %>
+</div>

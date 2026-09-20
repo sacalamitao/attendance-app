@@ -1,0 +1,52 @@
+<% page_title "Events" %>
+<div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+  <div>
+    <h1 class="text-2xl font-bold">Events</h1>
+    <p class="text-sm text-slate-500">Draft → Open → Closed. Only open events accept scans.</p>
+  </div>
+  <% if policy(Event).create? %>
+    <%= link_to "New event", new_event_path, class: button_classes(:primary) %>
+  <% end %>
+</div>
+
+<%= form_with url: events_path, method: :get, class: "mb-4 grid gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:grid-cols-[1fr_auto_auto_auto]" do |f| %>
+  <%= f.search_field :q, value: params[:q], placeholder: "Search by name or location", "aria-label": "Search", class: input_classes %>
+  <%= f.select :status, options_for_select([["All statuses", ""]] + Event::STATUSES.map { |s| [s.titleize, s] }, params[:status]), {}, "aria-label": "Status", class: input_classes %>
+  <%= f.date_field :date, value: params[:date], "aria-label": "Date", class: input_classes %>
+  <%= f.submit "Filter", class: button_classes(:secondary) %>
+<% end %>
+
+<div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+  <% if @events.any? %>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-slate-200 text-sm">
+        <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <tr>
+            <th scope="col" class="px-4 py-3">Event</th>
+            <th scope="col" class="px-4 py-3">Date</th>
+            <th scope="col" class="px-4 py-3">Time</th>
+            <th scope="col" class="px-4 py-3">Location</th>
+            <th scope="col" class="px-4 py-3">Status</th>
+            <th scope="col" class="px-4 py-3 text-right">Present</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @events.each do |event| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-3 font-medium"><%= link_to event.name, event, class: "hover:underline" %></td>
+              <td class="px-4 py-3"><%= l(event.event_date, format: :short) %></td>
+              <td class="px-4 py-3 whitespace-nowrap"><%= event.time_range %></td>
+              <td class="px-4 py-3"><%= event.location %></td>
+              <td class="px-4 py-3"><%= event_status_badge(event) %></td>
+              <td class="px-4 py-3 text-right font-semibold"><%= @attendance_counts.fetch(event.id, 0) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <%= render "shared/pagination", pager: @pager %>
+  <% else %>
+    <%= render "shared/empty_state", title: "No events found", hint: "Create an event to begin.",
+          action_label: (policy(Event).create? ? "New event" : nil), action_path: new_event_path %>
+  <% end %>
+</div>

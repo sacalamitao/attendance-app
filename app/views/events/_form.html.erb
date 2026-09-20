@@ -1,0 +1,29 @@
+<%= form_with model: event, class: "space-y-5" do |f| %>
+  <%= form_errors(event) %>
+  <div>
+    <%= f.label :name, "Event name", class: label_classes %>
+    <%= f.text_field :name, required: true, autofocus: event.new_record?, class: input_classes %>
+  </div>
+  <div class="grid gap-5 sm:grid-cols-3">
+    <div>
+      <%= f.label :event_date, "Date", class: label_classes %>
+      <%= f.date_field :event_date, required: true, class: input_classes %>
+    </div>
+    <div>
+      <%= f.label :start_time, class: label_classes %>
+      <%= f.time_field :start_time, required: true, class: input_classes %>
+    </div>
+    <div>
+      <%= f.label :end_time, class: label_classes %>
+      <%= f.time_field :end_time, required: true, class: input_classes %>
+    </div>
+  </div>
+  <div>
+    <%= f.label :location, class: label_classes %>
+    <%= f.text_field :location, required: true, class: input_classes %>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <%= f.submit(event.new_record? ? "Create event" : "Save changes", class: button_classes(:primary)) %>
+    <%= link_to "Cancel", (event.new_record? ? events_path : event_path(event)), class: button_classes(:secondary) %>
+  </div>
+<% end %>

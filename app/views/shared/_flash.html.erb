@@ -1,0 +1,8 @@
+<% flash.each do |type, message| %>
+  <% next if message.blank? %>
+  <% classes = type.to_s == "alert" ? "border-rose-200 bg-rose-50 text-rose-800" : "border-emerald-200 bg-emerald-50 text-emerald-800" %>
+  <div class="mb-4 flex items-start justify-between gap-3 rounded-lg border px-4 py-3 text-sm <%= classes %>" role="<%= type.to_s == 'alert' ? 'alert' : 'status' %>" data-controller="flash">
+    <p><%= message %></p>
+    <button type="button" class="text-current opacity-60 hover:opacity-100" data-action="flash#dismiss" aria-label="Dismiss">✕</button>
+  </div>
+<% end %>

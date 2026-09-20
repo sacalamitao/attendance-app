@@ -1,0 +1,56 @@
+<% page_title "#{@event.name} · Scanner" %>
+<div class="mx-auto max-w-lg"
+     data-controller="qr-scanner"
+     data-qr-scanner-scan-url-value="<%= api_event_attendance_scan_path(@event) %>"
+     data-qr-scanner-present-count-value="<%= @present_count %>">
+  <div class="mb-3 flex items-center justify-between gap-2">
+    <div class="min-w-0">
+      <p class="text-sm"><%= link_to "← #{@event.name}", event_path(@event), class: "truncate text-indigo-600 hover:underline" %></p>
+      <h1 class="text-xl font-bold">QR Scanner</h1>
+    </div>
+    <div class="text-right">
+      <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Present</p>
+      <p class="text-3xl font-bold leading-none text-emerald-700" data-qr-scanner-target="presentCount" aria-live="polite"><%= @present_count %></p>
+    </div>
+  </div>
+
+  <div class="relative overflow-hidden rounded-2xl bg-black shadow-lg" style="aspect-ratio: 1 / 1;">
+    <video data-qr-scanner-target="video" class="h-full w-full object-cover" playsinline muted autoplay aria-label="Camera preview"></video>
+    <canvas data-qr-scanner-target="canvas" class="hidden"></canvas>
+    <div class="pointer-events-none absolute inset-0 flex items-center justify-center" aria-hidden="true">
+      <div data-qr-scanner-target="frame" class="h-3/5 w-3/5 rounded-2xl border-4 border-white/70 transition-colors"></div>
+    </div>
+    <div data-qr-scanner-target="overlay" class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-900/80 p-6 text-center text-white">
+      <p data-qr-scanner-target="overlayText" class="text-sm">Start the camera to begin scanning attendee QR codes.</p>
+      <button type="button" class="<%= button_classes(:success, 'px-6 py-3 text-base') %>" data-action="qr-scanner#start" data-qr-scanner-target="startButton">Start camera</button>
+    </div>
+  </div>
+
+  <p class="mt-2 text-center text-xs text-slate-500" data-qr-scanner-target="status" role="status">Camera off</p>
+
+  <section class="mt-4 rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm transition-colors" data-qr-scanner-target="result" aria-live="assertive" aria-atomic="true">
+    <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Last scan</p>
+    <p class="mt-1 text-2xl font-bold" data-qr-scanner-target="resultTitle">Ready</p>
+    <p class="mt-1 text-lg" data-qr-scanner-target="resultName">Point the camera at an attendee's QR code.</p>
+    <p class="mt-1 text-sm text-slate-600" data-qr-scanner-target="resultDetail"></p>
+  </section>
+
+  <div class="mt-4 grid grid-cols-2 gap-2">
+    <%= link_to "View dashboard", dashboard_event_path(@event), class: button_classes(:secondary, "py-3") %>
+    <button type="button" class="<%= button_classes(:ghost, 'py-3 border border-slate-200') %>" data-action="qr-scanner#stop" data-qr-scanner-target="stopButton" hidden>Stop camera</button>
+  </div>
+
+  <details class="mt-6 rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
+    <summary class="cursor-pointer font-medium text-slate-700">Camera not working?</summary>
+    <ul class="mt-2 list-disc space-y-1 pl-5">
+      <li>Allow camera access when the browser asks. If you denied it, open the site settings (lock icon in the address bar) and enable Camera, then reload.</li>
+      <li>The camera needs a secure (HTTPS) connection.</li>
+      <li>On iPhone/iPad use Safari; on Android use Chrome.</li>
+      <li>As a fallback you can type or paste the code from the QR image below.</li>
+    </ul>
+    <form class="mt-3 flex gap-2" data-action="submit->qr-scanner#submitManual">
+      <input type="text" data-qr-scanner-target="manualInput" class="<%= input_classes %>" placeholder="attendee:…" aria-label="QR code text" autocomplete="off">
+      <button type="submit" class="<%= button_classes(:secondary) %>">Submit</button>
+    </form>
+  </details>
+</div>
