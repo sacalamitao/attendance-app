@@ -22,7 +22,7 @@ gem "jbuilder"
 # json 3.x removed the positional options argument from JSON.parse, which
 # ActiveSupport::JSON.decode (and therefore encrypted cookie deserialization)
 # still relies on. Pin to the 2.x line until Rails supports json 3.
-gem "json", "~> 2.21"
+gem "json", "~> 3.1"
 
 # Authentication and authorization
 gem "devise"
